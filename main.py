@@ -41,7 +41,32 @@ def get_excel_file_size_for(number_of_entries) -> float:
     return size
 
 
-t = test_scaling(1_000_000, 100)
-print(t)
+def test_different_types() -> pd.DataFrame:
+    results = pd.DataFrame(columns=['Type', 'File Size [MB]'])
 
-plot_scaling(t)
+    file_path = Path('./tmp.xlsx')
+    types = [int, float, str]
+
+    for t in types:
+        if file_path.exists():
+            file_path.unlink()
+        d = pd.DataFrame([t(1234)] * 10000)
+        d.to_excel(file_path)
+
+        size = file_path.stat().st_size / 1_000_000
+        results = results.append({
+            'Type': str(t),
+            'File Size [MB]': size
+        },
+                                 ignore_index=True)
+
+    return results
+
+
+#t = test_scaling(1_000_000, 100)
+#print(t)
+
+#plot_scaling(t)
+
+t = test_different_types()
+print(t)
